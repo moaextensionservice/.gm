@@ -1,891 +1,1103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Gambia Agriculture Extension Workers</title>
-<meta name="description" content="Gambia Agric Extension Workers Directory: Regions, Districts, Branches, Extension Workers, Nationwide dashboard & statistics" />
-<style>
-  :root{
-    --bg:#0f1724;
-    --card:#0b1220;
-    --muted:#9aa4b2;
-    --gold:#d4af37;
-    --silver:#c0c6cc;
-    --diamond:#bfe9ff;
-    --glass:rgba(255,255,255,0.04);
-    --radius:12px;
-    --maxw:1400px;
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    background:
-      radial-gradient(1000px 360px at 8% 8%, rgba(212,175,55,0.06), transparent),
-      radial-gradient(900px 280px at 92% 88%, rgba(191,233,255,0.03), transparent),
-      var(--bg);
-    color:#e6eef6;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    padding:2rem 1rem;
-  }
-  .layout{max-width:var(--maxw);margin:0 auto;}
-  header{display:flex;align-items:center;gap:1rem;justify-content:space-between;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:1rem;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:.6rem 1rem;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#ffd27f 40%,var(--diamond));display:grid;place-items:center;color:#08101a;font-weight:800;font-size:20px}
-  h1{margin:0;font-size:1.25rem;line-height:1;color:var(--gold)}
-  .lead{color:var(--muted);font-size:.95rem}
-  .controls{display:flex;gap:.6rem;margin-top:.75rem;align-items:center;flex-wrap:wrap}
-  .search{flex:1;display:flex;align-items:center;background:var(--glass);padding:.45rem;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-  .search input{background:transparent;border:0;color:inherit;padding:.45rem .6rem;outline:none;font-size:0.95rem}
-  .btn{background:linear-gradient(90deg,var(--gold),#ffd27f);color:#08101a;padding:.5rem .9rem;border-radius:10px;border:0;font-weight:700;cursor:pointer}
-  main{display:grid;grid-template-columns:320px 1fr;gap:1rem;margin-top:1rem}
-  aside{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-height:68vh;overflow:auto}
-  .region-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem}
-  .region-item{padding:.6rem;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:1px solid transparent}
-  .region-item:hover{background:rgba(255,255,255,0.02)}
-  .region-item.active{background:linear-gradient(90deg,rgba(212,175,55,0.06),rgba(191,233,255,0.02));border-color:rgba(212,175,55,0.08)}
-  .content{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-height:68vh;overflow:auto}
-  .district{background:rgba(255,255,255,0.01);padding:.8rem;border-radius:12px;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.02)}
-  .branches-grid{display:flex;flex-direction:column;gap:.6rem;margin-top:.6rem}
-  .branch{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:.6rem;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-  .branch h4{margin:0 0 .45rem 0;font-size:0.95rem}
-  .section-row{display:flex;gap:.6rem;flex-wrap:wrap}
-  .section{flex:1;min-width:220px;background:rgba(255,255,255,0.01);padding:.5rem;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-  .worker{display:flex;gap:.6rem;align-items:center;padding:.45rem;border-radius:10px;margin-bottom:.45rem;background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02)}
-  .avatar-wrap{width:56px;height:56px;border-radius:8px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(180deg,var(--silver),rgba(255,255,255,0.06))}
-  .avatar{display:block;width:48px;height:48px;border-radius:8px;object-fit:cover}
-  .initials{font-weight:700;color:#08101a}
-  .tinfo{flex:1}
-  .tinfo b{display:block}
-  .tmeta{font-size:.85rem;color:var(--muted);margin-top:.25rem}
-  footer{margin-top:1rem;color:var(--muted);font-size:.9rem;text-align:center}
-  select{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:inherit;padding:.5rem;border-radius:10px}
-  .dashboard{display:grid;grid-template-columns:1fr 320px;gap:1rem;margin-bottom:1rem}
-  .dash-card{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .stat-row{display:flex;gap:.6rem;flex-wrap:wrap}
-  .stat{flex:1;min-width:160px;background:rgba(255,255,255,0.02);padding:.6rem;border-radius:10px;text-align:center}
-  .stat h3{margin:0;color:var(--gold)}
-  .region-summary{display:flex;flex-direction:column;gap:.4rem;margin-top:.6rem}
-  .region-line{display:flex;justify-content:space-between;align-items:center;padding:.4rem;border-radius:8px;background:rgba(255,255,255,0.01)}
-  .tabs{display:flex;gap:.6rem;margin-bottom:.6rem}
-  .tab-btn{flex:1;padding:.5rem;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;cursor:pointer}
-  .tab-btn.active{background:linear-gradient(90deg,var(--gold),#ffd27f);color:#08101a;font-weight:700}
-  .stats-table{width:100%;border-collapse:collapse;margin-top:.6rem}
-  .stats-table th,.stats-table td{padding:.6rem;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
-  .small-muted{color:var(--muted);font-size:.9rem}
-  @media (max-width:980px){main{grid-template-columns:1fr} .dashboard{grid-template-columns:1fr} .controls{flex-direction:column;align-items:stretch}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gambia Farmers Database - Connecting Farmers with Resources</title>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --secondary: #FFD700;
+            --accent: #006400;
+            --light: #F5F5F5;
+            --dark: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo img {
+            height: 60px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        nav ul li a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .hero {
+            background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            max-width: 600px;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: var(--dark);
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--accent);
+        }
+        
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .region-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .region-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .region-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+        }
+        
+        .region-header h3 {
+            margin: 0;
+        }
+        
+        .region-content {
+            padding: 15px;
+        }
+        
+        .district-list {
+            list-style: none;
+        }
+        
+        .district-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .district-item:last-child {
+            border-bottom: none;
+        }
+        
+        .district-name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .village-list {
+            list-style: none;
+            padding-left: 15px;
+        }
+        
+        .village-item {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .data-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .data-table th {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .extension-worker {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .farmer-card, .garden-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        
+        .farmer-card h4, .garden-card h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .data-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="layout">
     <header>
-      <div class="brand">
-        <div class="logo">GM</div>
-        <div>
-          <h1>Gambia Agriculture Extension Workers</h1>
-          <div class="lead">Regions → Districts → Branches → Extension Workers — (Demo work in progress by Lamin Ceesay @ 3491934)</div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Gambia Farmers Database</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#regions">Regions</a></li>
+                        <li><a href="#farmers">Farmers</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
-      </div>
-      <div style="display:flex;gap:.6rem;align-items:center">
-        <button class="btn" id="viewStatsTop">View Statistics</button>
-        <button class="btn">Admin</button>
-      </div>
     </header>
 
-    <div class="controls">
-      <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" style="opacity:.85;margin-right:.4rem"><path d="M21 21l-4.35-4.35" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11.5" cy="11.5" r="5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><input id="searchInput" placeholder="Search workers, branches, districts, regions" /></div>
-      <select id="regionFilter"><option value="">All Regions</option></select>
-      <select id="districtFilter"><option value="">All Districts</option></select>
-      <select id="branchFilter"><option value="">All Agric Extension Offices</option></select>
-      <button class="btn" id="clearBtn">Clear</button>
-    </div>
-
-    <main>
-      <aside>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
-          <h4 style="color:var(--gold);margin:0">Regions</h4>
-          <div class="small-muted">Toggle</div>
-        </div>
-        <div class="tabs" style="margin-bottom:.6rem">
-          <button class="tab-btn active" id="tabRegions">Regions</button>
-          <button class="tab-btn" id="tabStats">Statistics</button>
-        </div>
-        <ul class="region-list" id="regionList"></ul>
-      </aside>
-
-      <section class="content" id="contentArea">
-        <!-- Dashboard (top) + Region list injected here -->
-      </section>
-    </main>
-
-    <footer>editing in progress — data autogenerated for demo purposes.</footer>
-  </div>
-
-<script>
-/*
-  Converted demo for Agric Extension Workers:
-  - Each district has 3 branches (Branch 1/2/3)
-  - Each branch has 6 extension workers (3 male, 3 female)
-  - Random unique names generated from pools
-  - Filters/search adapted for branches and workers
-*/
-
-// Pools to generate many unique names without repeats
-const maleFirst = [
-  'Lamin','Ebrima','Papa','Ousman','Alieu','Sainey','Kebba','Musa','Samba','Momodou',
-  'Yaw','Abdou','Modou','Abu','Saidy','Said','Baba','Njie','Pa','Sillah',
-  'Jobe','Sarr','Tamba','Jawo','Fafa','Mballow','Nyassi','Jatta','Ceesay','Faal',
-  'Darboe','Touray','Bah','Cham','Sanyang','Sanyangu','Sanyangbe','Camara','Kante','Jallow'
-];
-const femaleFirst = [
-  'Fatou','Aminata','Isatou','Aja','Binta','Saffie','Hawa','Mariama','Salma','Kaddy',
-  'Adama','Awa','Mariya','Yawda','Ndey','Gambetta','Zainab','Kumba','Ebrima','Ramatoulie',
-  'Yassin','Isatu','Fatima','Halima','Maimuna','Sukina','Sitta','Fanta','Rokia','Nadine',
-  'Aissatou','Aminu','Baye','Sona','Musa','Dieyna','Madi','Sena','Isha','Aria'
-];
-const surnames = [
-  'Ceesay','Jallow','Bojang','Touray','Sanyang','Gomez','Jatta','Faal','Jammeh','Cham',
-  'Colley','Bah','Sanneh','Lowe','Darboe','Sonko','Jarju','Njie','Trawally','Sillah',
-  'Jobe','Sarr','Tamba','Jawo','Mballow','Nyassi','Camara','Kante','Sowe','Darboe-L',
-  'Bah-F','Fofana','Senghore','Boima','Kinteh','Manneh','Sowe-L','Kane','Kebbeh','Mbye'
-];
-
-// create shuffled indices to create many unique combinations
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-const maleFirstIdx = shuffle([...Array(maleFirst.length).keys()]);
-const femaleFirstIdx = shuffle([...Array(femaleFirst.length).keys()]);
-const surnameIdx = shuffle([...Array(surnames.length).keys()]);
-
-let nameCounter = 0;
-const usedNames = new Set();
-
-// produce a unique full name for given gender
-function getUniqueName(gender){
-  const maxCombos = maleFirst.length * surnames.length;
-  for(let i=0;i<maxCombos;i++){
-    // rotate counters for variety
-    const fIdx = gender === 'Male'
-      ? maleFirstIdx[(nameCounter + i) % maleFirst.length]
-      : femaleFirstIdx[(nameCounter + i) % femaleFirst.length];
-    const sIdx = surnameIdx[(Math.floor((nameCounter + i) / Math.max(1, (gender==='Male'?maleFirst.length:femaleFirst.length))) ) % surnames.length];
-    const full = `${(gender==='Male'?maleFirst[fIdx]:femaleFirst[fIdx])} ${surnames[sIdx]}`;
-    if(!usedNames.has(full)){
-      usedNames.add(full);
-      nameCounter++;
-      return full;
-    }
-  }
-  // fallback - extremely unlikely
-  nameCounter++;
-  return (gender==='Male' ? 'Modou ' : 'Awa ') + 'Unknown' + nameCounter;
-}
-
-// Regions and districts (kept from your earlier dataset)
-const regions = [
-  { name: 'Banjul', districts: ['Banjul Ward A','Banjul Ward B'] },
-  { name: 'Kanifing Municipality', districts: ['Serekunda East','Serekunda West','Brikama Road','Tallinding Kunjang','Latrikunda Sabiji'] },
-  { name: 'West Coast Region (Brikama)', districts: ['Kombo North','Kombo South','Kombo Central','Kombo East','Kombo Central II','Foni Bintang-Karenai','Foni Brefet','Foni Jarrol','Foni Kansala'] },
-  { name: 'North Bank Region (Kerewan)', districts: ['Lower Niumi','Upper Niumi','Jokadu','Lower Baddibu','Central Baddibu','Upper Baddibu'] },
-  { name: 'Lower River Region (Mansa Konko)', districts: ['Kiang West','Kiang Central','Kiang East','Jarra West','Jarra Central','Jarra East'] },
-  { name: 'Central River Region (Janjanbureh)', districts: ['Janjanbureh','Niani','Nianija','Sami','Fulladu West','Niamina East','Niamina West','Niamina Dankunku','Lower Saloum','Upper Saloum'] },
-  { name: 'Upper River Region (Basse)', districts: ['Fulladu East','Kantora','Sandu','Tumana','Wuli West','Wuli East','Jimara'] }
-];
-
-// id generator for dummy TIN and ID numbers
-let idCounter = 500000;
-function genID(prefix){
-  idCounter++;
-  return `${prefix}-${String(idCounter).padStart(6,'0')}`;
-}
-
-// construct full dataset: each district -> 3 branches -> each branch 6 workers (3M + 3F)
-
-// --- AUTOGENERATED fullData from regionsInput (Teachers Directory) ---
-const fullData = [];
-(function buildFullData(){
-  const templateWorkers = [
-  {
-    "name": "Lamin Ceesay",
-    "initials": "LC",
-    "gender": "Male",
-    "tin": "TIN-100001",
-    "idNo": "GMBID-200001",
-    "role": "Head Teacher",
-    "experience": 10
-  },
-  {
-    "name": "Fatou Jallow",
-    "initials": "FJ",
-    "gender": "Female",
-    "tin": "TIN-100002",
-    "idNo": "GMBID-200002",
-    "role": "Deputy",
-    "experience": 6
-  },
-  {
-    "name": "Ebrima Bojang",
-    "initials": "EB",
-    "gender": "Male",
-    "tin": "TIN-100003",
-    "idNo": "GMBID-200003",
-    "role": "Teacher",
-    "experience": 4
-  },
-  {
-    "name": "Aminata Sanyang",
-    "initials": "AS",
-    "gender": "Female",
-    "tin": "TIN-100004",
-    "idNo": "GMBID-200004",
-    "role": "Teacher",
-    "experience": 3
-  }
-];
-  let tplIdx = 0;
-  function cloneWorker(i){
-    const src = templateWorkers[i % templateWorkers.length];
-    // deep clone
-    const w = JSON.parse(JSON.stringify(src));
-    w.photo = 'https://via.placeholder.com/120/ffffff/08101a?text='+encodeURIComponent((w.initials||w.name.split(' ')[0].slice(0,2)).toUpperCase());
-    return w;
-  }
-  regionsInput.forEach(regionItem=>{
-    const regionObj = { region: regionItem.name, districts: [] };
-    regionItem.districts.forEach(d=>{
-      const districtObj = { district: d.district, branches: [] };
-      d.villages.forEach(v=>{
-        ['Primary School','Junior School','Senior School'].forEach(type=>{
-          const schoolName = v + ' ' + type;
-          const workers = [];
-          for(let k=0;k<4;k++){
-            workers.push(cloneWorker(tplIdx)); tplIdx++;
-          }
-          districtObj.branches.push({ branch: schoolName, workers });
-        });
-      });
-      regionObj.districts.push(districtObj);
-    });
-    fullData.push(regionObj);
-  });
-})();
-
-
-// UI references// UI references
-const regionListEl = document.getElementById('regionList');
-const contentArea = document.getElementById('contentArea');
-const searchInput = document.getElementById('searchInput');
-const regionFilter = document.getElementById('regionFilter');
-const districtFilter = document.getElementById('districtFilter');
-const branchFilter = document.getElementById('branchFilter');
-const clearBtn = document.getElementById('clearBtn');
-const tabRegions = document.getElementById('tabRegions');
-const tabStats = document.getElementById('tabStats');
-const viewStatsTop = document.getElementById('viewStatsTop');
-
-// helper: compute totals across dataset
-function computeTotals(dataset = fullData){
-  const totals = {
-    nationwide: { total:0, male:0, female:0, branches:0, districts:0 },
-    regions: [] // { region, total, male, female, branches, districts }
-  };
-
-  dataset.forEach(r => {
-    const rtot = { region: r.region, total:0, male:0, female:0, branches:0, districts: r.districts.length };
-
-    r.districts.forEach(d => {
-      d.branches.forEach(b => {
-        rtot.branches++;
-        totals.nationwide.branches++;
-        const wCount = b.workers.length;
-        rtot.total += wCount;
-        totals.nationwide.total += wCount;
-
-        b.workers.forEach(w => {
-          if(w.gender === 'Male'){ rtot.male++; totals.nationwide.male++; }
-          else { rtot.female++; totals.nationwide.female++; }
-        });
-      });
-    });
-
-    totals.regions.push(rtot);
-  });
-
-  totals.nationwide.districts = dataset.reduce((sum, r) => sum + r.districts.length, 0);
-  return totals;
-}
-
-// create dashboard DOM
-function renderDashboard(totals){
-  const dash = document.createElement('div');
-  dash.className = 'dashboard';
-
-  const left = document.createElement('div');
-  left.className = 'dash-card';
-  left.innerHTML = `
-    <h2 style="color:var(--gold);margin:0 0 .4rem 0">Nationwide Summary</h2>
-    <div class="small-muted">Auto-calculated totals from dataset</div>
-    <div style="margin-top:.8rem" id="nationSummaryInner"></div>
-  `;
-
-  const right = document.createElement('div');
-  right.className = 'dash-card';
-  right.innerHTML = `<h3 style="margin:0 0 .4rem 0;color:var(--gold)">Regions Overview</h3><div id="regionsOverviewInner" class="region-summary"></div>`;
-
-  dash.appendChild(left);
-  dash.appendChild(right);
-  contentArea.appendChild(dash);
-
-  const ns = document.getElementById('nationSummaryInner');
-  ns.innerHTML = `
-    <div class="stat-row">
-      <div class="stat">
-        <h3>${totals.nationwide.total.toLocaleString()}</h3>
-        <div class="small-muted">Total Extension Workers (Nationwide)</div>
-      </div>
-      <div class="stat">
-        <h3>${totals.nationwide.male.toLocaleString()}</h3>
-        <div class="small-muted">Male Workers</div>
-      </div>
-      <div class="stat">
-        <h3>${totals.nationwide.female.toLocaleString()}</h3>
-        <div class="small-muted">Female Workers</div>
-      </div>
-    </div>
-
-    <div style="margin-top:.8rem">
-      <strong class="small-muted">Structure</strong>
-      <div style="display:flex;gap:.6rem;margin-top:.4rem;flex-wrap:wrap">
-        <div class="stat" style="min-width:120px">
-          <h3>${totals.nationwide.branches}</h3>
-          <div class="small-muted">Total Branches</div>
-        </div>
-        <div class="stat" style="min-width:120px">
-          <h3>${totals.nationwide.districts}</h3>
-          <div class="small-muted">Total Districts</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  const roi = document.getElementById('regionsOverviewInner');
-  roi.innerHTML = '';
-  totals.regions.forEach(r => {
-    const line = document.createElement('div');
-    line.className = 'region-line';
-    line.innerHTML = `<div style="font-weight:700">${r.region}</div><div class="small-muted">${r.total} workers</div>`;
-    roi.appendChild(line);
-  });
-}
-
-// render entire Regions view
-function renderRegionsView() {
-  contentArea.innerHTML = '';
-  const totals = computeTotals(fullData);
-  renderDashboard(totals);
-
-  fullData.forEach(r => {
-    const regionBox = document.createElement('div');
-    regionBox.className = 'dash-card';
-    regionBox.style.marginTop = '0.8rem';
-    const rtot = computeTotals([r]).regions[0];
-    regionBox.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h2 style="margin:0;color:var(--gold)">${r.region}</h2>
-          <div class="small-muted">Total Workers: <strong>${rtot.total}</strong> • Branches: ${rtot.branches} • Districts: ${rtot.districts}</div>
-        </div>
-        <div style="text-align:right">
-          <button class="btn" onclick="selectRegionByName('${r.region.replace(/'/g, "\\'")}')">View Region</button>
-        </div>
-      </div>
-    `;
-    contentArea.appendChild(regionBox);
-  });
-
-  const spacer = document.createElement('div');
-  spacer.style.height = '10px';
-  contentArea.appendChild(spacer);
-}
-
-// render a single region (districts -> branches -> workers)
-function renderRegion(regionObj){
-  contentArea.innerHTML = '';
-  const rtot = computeTotals([regionObj]).regions[0];
-  const top = document.createElement('div');
-  top.className = 'dash-card';
-  top.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <h2 style="margin:0;color:var(--gold)">${regionObj.region}</h2>
-        <div class="small-muted">Total Workers: <strong>${rtot.total}</strong> • Branches: ${rtot.branches} • Districts: ${rtot.districts}</div>
-      </div>
-      <div style="text-align:right">
-        <button class="btn" id="backToHome">Back</button>
-      </div>
-    </div>
-  `;
-  contentArea.appendChild(top);
-
-  regionObj.districts.forEach(d => {
-    const dEl = document.createElement('div');
-    dEl.className = 'district';
-    dEl.innerHTML = `<h3>📍 ${d.district}</h3>`;
-    const grid = document.createElement('div');
-    grid.className = 'branches-grid';
-
-    d.branches.forEach(b => {
-      const male = b.workers.filter(w => w.gender === 'Male').length;
-      const female = b.workers.filter(w => w.gender === 'Female').length;
-      const bEl = document.createElement('div');
-      bEl.className = 'branch';
-      bEl.innerHTML = `<h4>${b.branch}</h4>
-        <div class="small-muted" style="margin-bottom:.6rem">Total Workers: <strong>${b.workers.length}</strong> (${male} Male • ${female} Female)</div>
-      `;
-
-      const secRow = document.createElement('div');
-      secRow.className = 'section-row';
-      const section = document.createElement('div');
-      section.className = 'section';
-      section.innerHTML = `<small>Extension Workers</small>`;
-
-      b.workers.forEach(w => {
-        const wEl = document.createElement('div');
-        wEl.className = 'worker';
-        wEl.innerHTML = `
-          <div class="avatar-wrap"><img class="avatar" src="${w.photo}" alt="${w.initials}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'initials\\'>${w.initials}</div>'" /></div>
-          <div class="tinfo">
-            <b>${w.name}</b>
-            <div class="tmeta">${w.gender} • ${w.shift} shift • ${w.experience} yrs</div>
-            <div class="tmeta">TIN: ${w.tin} • ID: ${w.idNo}</div>
-          </div>
-        `;
-        section.appendChild(wEl);
-      });
-
-      secRow.appendChild(section);
-      bEl.appendChild(secRow);
-      grid.appendChild(bEl);
-    });
-
-    dEl.appendChild(grid);
-    contentArea.appendChild(dEl);
-  });
-
-  document.getElementById('backToHome').addEventListener('click', () => {
-    tabRegions.click();
-    renderRegionsView();
-  });
-}
-
-// Statistics tab content (detailed table)
-function renderStatisticsView(){
-  contentArea.innerHTML = '';
-  const totals = computeTotals(fullData);
-
-  const statsCard = document.createElement('div');
-  statsCard.className = 'dash-card';
-  statsCard.innerHTML = `
-    <h2 style="color:var(--gold);margin:0 0 .4rem 0">Statistics Report</h2>
-    <div class="small-muted">Detailed region breakdown</div>
-    <div id="statsTableWrap"></div>
-  `;
-  contentArea.appendChild(statsCard);
-
-  const wrap = document.getElementById('statsTableWrap');
-  let html = `
-    <table class="stats-table">
-      <thead>
-        <tr><th>Region</th><th>Districts</th><th>Branches</th><th>Total Workers</th><th>Male</th><th>Female</th></tr>
-      </thead>
-      <tbody>
-  `;
-  totals.regions.forEach(r => {
-    html += `<tr>
-      <td style="width:40%">${r.region}</td>
-      <td>${r.districts}</td>
-      <td>${r.branches}</td>
-      <td>${r.total}</td>
-      <td>${r.male}</td>
-      <td>${r.female}</td>
-    </tr>`;
-  });
-
-  html += `</tbody>
-    <tfoot>
-      <tr style="font-weight:700">
-        <td>Total (Nationwide)</td>
-        <td>${totals.nationwide.districts}</td>
-        <td>${totals.nationwide.branches}</td>
-        <td>${totals.nationwide.total}</td>
-        <td>${totals.nationwide.male}</td>
-        <td>${totals.nationwide.female}</td>
-      </tr>
-    </tfoot>
-    </table>
-    `;
-
-  wrap.innerHTML = html;
-
-  const exportBtn = document.createElement('button');
-  exportBtn.className = 'btn';
-  exportBtn.style.marginTop = '10px';
-  exportBtn.textContent = 'Export CSV';
-  wrap.appendChild(exportBtn);
-
-  exportBtn.addEventListener('click', () => {
-    let csv = 'Region, Districts, Branches, TotalWorkers, Male, Female\n';
-    totals.regions.forEach(r => {
-      csv += `"${r.region}",${r.districts},${r.branches},${r.total},${r.male},${r.female}\n`;
-    });
-    csv += `Nationwide,${totals.nationwide.districts},${totals.nationwide.branches},${totals.nationwide.total},${totals.nationwide.male},${totals.nationwide.female}\n`;
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'gambia_agric_extension_statistics.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-}
-
-// populate sidebar and region dropdown
-fullData.forEach((r, regionIndex) => {
-  const li = document.createElement('li');
-  li.className = 'region-item';
-  li.innerHTML = `<span>${r.region}</span><small style="color:var(--muted)">View</small>`;
-  li.addEventListener('click', () => {
-    [...regionListEl.children].forEach((c,i) => c.classList.toggle('active', i===regionIndex));
-    renderRegion(r);
-    populateDistricts(r);
-  });
-  regionListEl.appendChild(li);
-
-  const opt = document.createElement('option');
-  opt.value = r.region;
-  opt.textContent = r.region;
-  regionFilter.appendChild(opt);
-});
-
-// helper to populate district dropdown
-function populateDistricts(regionObj){
-  districtFilter.innerHTML = '<option value="">All Districts</option>';
-  branchFilter.innerHTML = '<option value="">All Agric Extension Offices</option>';
-  regionObj.districts.forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d.district;
-    opt.textContent = d.district;
-    districtFilter.appendChild(opt);
-  });
-}
-
-// helper to populate branches dropdown for a selected district
-function populateBranchesFrom(regionName, districtName){
-  branchFilter.innerHTML = '<option value="">All Agric Extension Offices</option>';
-  const region = fullData.find(r => r.region === regionName);
-  if(!region) return;
-  const district = region.districts.find(d => d.district === districtName);
-  if(!district) return;
-  district.branches.forEach(b => {
-    const opt = document.createElement('option');
-    opt.value = b.branch;
-    opt.textContent = b.branch;
-    branchFilter.appendChild(opt);
-  });
-}
-
-// select first region by default (when Regions tab active)
-function selectRegion(idx){
-  [...regionListEl.children].forEach((c,i) => c.classList.toggle('active', i===idx));
-  const regionObj = fullData[idx];
-  renderRegion(regionObj);
-  populateDistricts(regionObj);
-  districtFilter.value = '';
-  branchFilter.value = '';
-}
-function selectRegionByName(name){
-  const idx = fullData.findIndex(r => r.region === name);
-  if(idx >= 0) selectRegion(idx);
-}
-
-// filter logic (search & dropdowns)
-function filterAndRender(){
-  const q = (searchInput.value || '').trim().toLowerCase();
-  const regionVal = regionFilter.value;
-  const districtVal = districtFilter.value;
-  const branchVal = branchFilter.value;
-
-  // Build filtered subset
-  const filtered = fullData
-    .filter(r => !regionVal || r.region === regionVal)
-    .map(r => {
-      const districts = r.districts
-        .filter(d => !districtVal || d.district === districtVal)
-        .map(d => {
-          const branches = d.branches
-            .filter(b => !branchVal || b.branch === branchVal)
-            .map(b => {
-              const workers = b.workers.filter(w =>
-                !q ||
-                w.name.toLowerCase().includes(q) ||
-                b.branch.toLowerCase().includes(q) ||
-                d.district.toLowerCase().includes(q) ||
-                r.region.toLowerCase().includes(q)
-              );
-              return {...b, workers};
-            })
-            .filter(b => b.workers.length > 0);
-          return {...d, branches};
-        })
-        .filter(d => d.branches.length > 0);
-      return {...r, districts};
-    })
-    .filter(r => r.districts.length > 0);
-
-  contentArea.innerHTML = '';
-  if(filtered.length === 0){
-    contentArea.innerHTML = `<div style="color:var(--muted)">No results found.</div>`;
-    return;
-  }
-
-  const totals = computeTotals(filtered);
-  renderDashboard(totals);
-
-  filtered.forEach(r => {
-    const regionTitle = document.createElement('h2');
-    regionTitle.style.color = 'var(--gold)';
-    regionTitle.style.marginTop = '0';
-    regionTitle.textContent = r.region;
-    contentArea.appendChild(regionTitle);
-
-    r.districts.forEach(d => {
-      const dEl = document.createElement('div');
-      dEl.className = 'district';
-      dEl.innerHTML = `<h3>📍 ${d.district}</h3>`;
-      const grid = document.createElement('div');
-      grid.className = 'branches-grid';
-
-      d.branches.forEach(b => {
-        const male = b.workers.filter(w => w.gender === 'Male').length;
-        const female = b.workers.filter(w => w.gender === 'Female').length;
-        const bEl = document.createElement('div');
-        bEl.className = 'branch';
-        bEl.innerHTML = `<h4>${b.branch}</h4>
-          <div class="small-muted" style="margin-bottom:.6rem">Total Workers: <strong>${b.workers.length}</strong> (${male} M • ${female} F)</div>
-        `;
-        const secRow = document.createElement('div');
-        secRow.className = 'section-row';
-        const section = document.createElement('div');
-        section.className = 'section';
-        section.innerHTML = `<small>Extension Workers</small>`;
-
-        b.workers.forEach(w => {
-          const wEl = document.createElement('div');
-          wEl.className = 'worker';
-          wEl.innerHTML = `
-            <div class="avatar-wrap"><img class="avatar" src="${w.photo}" alt="${w.initials}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'initials\\'>${w.initials}</div>'" /></div>
-            <div class="tinfo">
-              <b>${w.name}</b>
-              <div class="tmeta">${w.gender} • ${w.shift} shift • ${w.experience} yrs</div>
-              <div class="tmeta">TIN: ${w.tin} • ID: ${w.idNo}</div>
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Connecting Gambian Farmers with Extension Workers & Decision Makers</h2>
+                <p>A comprehensive database of commercial farmers and community gardens across all regions of The Gambia</p>
+                <a href="#regions" class="btn">Explore Regions</a>
             </div>
-          `;
-          section.appendChild(wEl);
+        </div>
+    </section>
+
+    <section class="section" id="regions">
+        <div class="container">
+            <h2 class="section-title">Regions of The Gambia</h2>
+            <div class="regions-grid" id="regions-container">
+                <!-- Regions will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="farmers-data" style="background-color: #f0f8f0;">
+        <div class="container">
+            <h2 class="section-title">Farmers Database</h2>
+            <div class="data-actions">
+                <button class="btn" onclick="downloadAllData()">Download Complete Database</button>
+                <button class="btn" onclick="downloadProductionData()">Download Production Capacity Data</button>
+            </div>
+            <div id="data-display">
+                <!-- Data will be displayed here based on selection -->
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="resources">
+        <div class="container">
+            <h2 class="section-title">Agricultural Resources</h2>
+            <div class="resources-content">
+                <p>Access extension services, market information, and agricultural best practices to improve your farming operations.</p>
+                <div class="data-actions">
+                    <button class="btn">Extension Services</button>
+                    <button class="btn">Market Prices</button>
+                    <button class="btn">Training Programs</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Gambia Farmers Database</h3>
+                    <p>Connecting farmers with extension workers and decision makers for improved agricultural productivity in The Gambia.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <p>Email: info@gambiafarmers.gm</p>
+                    <p>Phone: +220 123 4567</p>
+                    <p>Address: Department of Agriculture, Banjul, The Gambia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#regions">Regions</a></li>
+                        <li><a href="#farmers">Farmers Database</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Gambia Farmers Database. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Comprehensive data structure for The Gambia Farmers Database
+        const gambiaFarmersData = {
+            regions: [
+                {
+                    id: 1,
+                    name: "BANJUL REGION",
+                    capital: "Banjul City Council",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Banjul Central",
+                            villages: ["Half-Die", "Campama", "Crab Island", "New Town", "Booreng"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Half-Die",
+                                    extensionWorker: {
+                                        name: "Musa Jallow",
+                                        office: "Half-Die Extension Office",
+                                        contact: "+220 123 4567",
+                                        gender: "male"
+                                    },
+                                    communityGarden: {
+                                        village: "Half-Die",
+                                        products: ["Tomatoes", "Onions", "Cabbage"],
+                                        presidentContact: "+220 234 5678",
+                                        productionFrequency: "3 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Fatou Sowe",
+                                            location: "Half-Die",
+                                            products: ["Vegetables", "Fruits"],
+                                            productionCapacity: "5 tons per season",
+                                            profile: "https://gambiafarmers.gm/fatou-sowe",
+                                            contact: "+220 345 6789",
+                                            employees: 8,
+                                            gender: "female"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Lamin Jatta",
+                                            location: "Half-Die",
+                                            products: ["Rice", "Maize"],
+                                            productionCapacity: "12 tons per season",
+                                            profile: "https://gambiafarmers.gm/lamin-jatta",
+                                            contact: "+220 456 7890",
+                                            employees: 15,
+                                            gender: "male"
+                                        }
+                                    ]
+                                },
+                                {
+                                    id: 2,
+                                    name: "Ward 2",
+                                    village: "Campama",
+                                    extensionWorker: {
+                                        name: "Aminata Ceesay",
+                                        office: "Campama Extension Office",
+                                        contact: "+220 567 8901",
+                                        gender: "female"
+                                    },
+                                    communityGarden: {
+                                        village: "Campama",
+                                        products: ["Lettuce", "Carrots", "Peppers"],
+                                        presidentContact: "+220 678 9012",
+                                        productionFrequency: "2 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Ousman Njie",
+                                            location: "Campama",
+                                            products: ["Groundnuts", "Beans"],
+                                            productionCapacity: "8 tons per season",
+                                            profile: "https://gambiafarmers.gm/ousman-njie",
+                                            contact: "+220 789 0123",
+                                            employees: 12,
+                                            gender: "male"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Kaddy Jammeh",
+                                            location: "Campama",
+                                            products: ["Vegetables", "Herbs"],
+                                            productionCapacity: "3 tons per season",
+                                            profile: "https://gambiafarmers.gm/kaddy-jammeh",
+                                            contact: "+220 890 1234",
+                                            employees: 6,
+                                            gender: "female"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "KANIFING REGION",
+                    capital: "Kanifing Municipal Council",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Kanifing District",
+                            villages: ["Serekunda", "Bakau", "Fajara", "Latrikunda Sabiji", "Bundung"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Serekunda",
+                                    extensionWorker: {
+                                        name: "Ebrima Sarr",
+                                        office: "Serekunda Extension Office",
+                                        contact: "+220 901 2345",
+                                        gender: "male"
+                                    },
+                                    communityGarden: {
+                                        village: "Serekunda",
+                                        products: ["Tomatoes", "Okra", "Eggplant"],
+                                        presidentContact: "+220 012 3456",
+                                        productionFrequency: "4 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Mariama Bojang",
+                                            location: "Serekunda",
+                                            products: ["Fruits", "Vegetables"],
+                                            productionCapacity: "7 tons per season",
+                                            profile: "https://gambiafarmers.gm/mariama-bojang",
+                                            contact: "+220 123 7890",
+                                            employees: 10,
+                                            gender: "female"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Modou Faal",
+                                            location: "Serekunda",
+                                            products: ["Maize", "Millet"],
+                                            productionCapacity: "15 tons per season",
+                                            profile: "https://gambiafarmers.gm/modou-faal",
+                                            contact: "+220 234 8901",
+                                            employees: 20,
+                                            gender: "male"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "WEST COAST REGION",
+                    capital: "Brikama",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Kombo South",
+                            villages: ["Sanyang", "Gunjur", "Tanji", "Kartong", "Jambanjelly"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Sanyang",
+                                    extensionWorker: {
+                                        name: "Hawa Manneh",
+                                        office: "Sanyang Extension Office",
+                                        contact: "+220 345 9012",
+                                        gender: "female"
+                                    },
+                                    communityGarden: {
+                                        village: "Sanyang",
+                                        products: ["Cabbage", "Lettuce", "Tomatoes"],
+                                        presidentContact: "+220 456 0123",
+                                        productionFrequency: "3 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Lamin Darboe",
+                                            location: "Sanyang",
+                                            products: ["Rice", "Vegetables"],
+                                            productionCapacity: "10 tons per season",
+                                            profile: "https://gambiafarmers.gm/lamin-darboe",
+                                            contact: "+220 567 1234",
+                                            employees: 14,
+                                            gender: "male"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Fatou Jallow",
+                                            location: "Sanyang",
+                                            products: ["Fruits", "Herbs"],
+                                            productionCapacity: "4 tons per season",
+                                            profile: "https://gambiafarmers.gm/fatou-jallow",
+                                            contact: "+220 678 2345",
+                                            employees: 7,
+                                            gender: "female"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "NORTH BANK REGION",
+                    capital: "Kerewan",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Lower Niumi",
+                            villages: ["Barra", "Essau", "Albreda", "Kanuma", "Jinack Kajata"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Barra",
+                                    extensionWorker: {
+                                        name: "Omar Jobe",
+                                        office: "Barra Extension Office",
+                                        contact: "+220 789 3456",
+                                        gender: "male"
+                                    },
+                                    communityGarden: {
+                                        village: "Barra",
+                                        products: ["Onions", "Peppers", "Tomatoes"],
+                                        presidentContact: "+220 890 4567",
+                                        productionFrequency: "2 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Isatou Sanyang",
+                                            location: "Barra",
+                                            products: ["Vegetables", "Legumes"],
+                                            productionCapacity: "6 tons per season",
+                                            profile: "https://gambiafarmers.gm/isatou-sanyang",
+                                            contact: "+220 901 5678",
+                                            employees: 9,
+                                            gender: "female"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Bubacarr Sawo",
+                                            location: "Barra",
+                                            products: ["Maize", "Groundnuts"],
+                                            productionCapacity: "18 tons per season",
+                                            profile: "https://gambiafarmers.gm/bubacarr-sawo",
+                                            contact: "+220 012 6789",
+                                            employees: 22,
+                                            gender: "male"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: "LOWER RIVER REGION",
+                    capital: "Mansakonko",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Jarra East",
+                            villages: ["Bureng", "Dasilameh", "Dongoroba", "Fellenkoto", "Karantaba Jarreng"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Bureng",
+                                    extensionWorker: {
+                                        name: "Aisha Fofana",
+                                        office: "Bureng Extension Office",
+                                        contact: "+220 123 9012",
+                                        gender: "female"
+                                    },
+                                    communityGarden: {
+                                        village: "Bureng",
+                                        products: ["Cabbage", "Carrots", "Lettuce"],
+                                        presidentContact: "+220 234 0123",
+                                        productionFrequency: "3 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Lamin Saine",
+                                            location: "Bureng",
+                                            products: ["Rice", "Vegetables"],
+                                            productionCapacity: "14 tons per season",
+                                            profile: "https://gambiafarmers.gm/lamin-saine",
+                                            contact: "+220 345 1234",
+                                            employees: 18,
+                                            gender: "male"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Kaddy Sarr",
+                                            location: "Bureng",
+                                            products: ["Fruits", "Herbs"],
+                                            productionCapacity: "5 tons per season",
+                                            profile: "https://gambiafarmers.gm/kaddy-sarr",
+                                            contact: "+220 456 2345",
+                                            employees: 8,
+                                            gender: "female"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 6,
+                    name: "CENTRAL RIVER REGION",
+                    capital: "Janjanbureh & Kuntaur",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Niamina East",
+                            villages: ["Sapu", "Kudang", "Missira", "Jarreng", "Kunting"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Sapu",
+                                    extensionWorker: {
+                                        name: "Alieu Sanneh",
+                                        office: "Sapu Extension Office",
+                                        contact: "+220 567 4567",
+                                        gender: "male"
+                                    },
+                                    communityGarden: {
+                                        village: "Sapu",
+                                        products: ["Tomatoes", "Onions", "Peppers"],
+                                        presidentContact: "+220 678 5678",
+                                        productionFrequency: "2 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Fatou Camara",
+                                            location: "Sapu",
+                                            products: ["Vegetables", "Legumes"],
+                                            productionCapacity: "7 tons per season",
+                                            profile: "https://gambiafarmers.gm/fatou-camara",
+                                            contact: "+220 789 6789",
+                                            employees: 11,
+                                            gender: "female"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Ebrima Jeng",
+                                            location: "Sapu",
+                                            products: ["Maize", "Millet"],
+                                            productionCapacity: "16 tons per season",
+                                            profile: "https://gambiafarmers.gm/ebrima-jeng",
+                                            contact: "+220 890 7890",
+                                            employees: 19,
+                                            gender: "male"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 7,
+                    name: "UPPER RIVER REGION",
+                    capital: "Basse",
+                    districts: [
+                        {
+                            id: 1,
+                            name: "Wuli East",
+                            villages: ["Bantunding", "Wellingara Yare", "Sare Ngai Sillah", "Barrow Kunda East", "Koli Kunda"],
+                            wards: [
+                                {
+                                    id: 1,
+                                    name: "Ward 1",
+                                    village: "Bantunding",
+                                    extensionWorker: {
+                                        name: "Mariama Jallow",
+                                        office: "Bantunding Extension Office",
+                                        contact: "+220 901 8901",
+                                        gender: "female"
+                                    },
+                                    communityGarden: {
+                                        village: "Bantunding",
+                                        products: ["Cabbage", "Lettuce", "Tomatoes"],
+                                        presidentContact: "+220 012 9012",
+                                        productionFrequency: "3 times a year"
+                                    },
+                                    farmers: [
+                                        {
+                                            type: "commercial",
+                                            name: "Lamin Colley",
+                                            location: "Bantunding",
+                                            products: ["Rice", "Vegetables"],
+                                            productionCapacity: "11 tons per season",
+                                            profile: "https://gambiafarmers.gm/lamin-colley",
+                                            contact: "+220 123 0123",
+                                            employees: 16,
+                                            gender: "male"
+                                        },
+                                        {
+                                            type: "commercial",
+                                            name: "Aminata Sowe",
+                                            location: "Bantunding",
+                                            products: ["Fruits", "Herbs"],
+                                            productionCapacity: "6 tons per season",
+                                            profile: "https://gambiafarmers.gm/aminata-sowe",
+                                            contact: "+220 234 1234",
+                                            employees: 9,
+                                            gender: "female"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Function to display regions on the page
+        function displayRegions() {
+            const regionsContainer = document.getElementById('regions-container');
+            regionsContainer.innerHTML = '';
+
+            gambiaFarmersData.regions.forEach(region => {
+                const regionCard = document.createElement('div');
+                regionCard.className = 'region-card';
+                
+                let districtsHTML = '';
+                region.districts.forEach(district => {
+                    districtsHTML += `
+                        <div class="district-item">
+                            <div class="district-name">${district.name}</div>
+                            <ul class="village-list">
+                                ${district.villages.map(village => `<li class="village-item">${village}</li>`).join('')}
+                            </ul>
+                            <button class="btn" style="margin-top: 10px; padding: 5px 10px; font-size: 0.8rem;" onclick="showRegionData(${region.id})">View Data & Download CSV</button>
+                        </div>
+                    `;
+                });
+                
+                regionCard.innerHTML = `
+                    <div class="region-header">
+                        <h3>${region.name}</h3>
+                        <p>Capital: ${region.capital}</p>
+                    </div>
+                    <div class="region-content">
+                        <h4>Districts</h4>
+                        <div class="district-list">
+                            ${districtsHTML}
+                        </div>
+                    </div>
+                `;
+                
+                regionsContainer.appendChild(regionCard);
+            });
+        }
+
+        // Function to show data for a specific region
+        function showRegionData(regionId) {
+            const region = gambiaFarmersData.regions.find(r => r.id === regionId);
+            const dataDisplay = document.getElementById('data-display');
+            
+            let html = `<h3 style="text-align: center; margin-bottom: 20px;">${region.name} - Farmers and Extension Workers</h3>`;
+            
+            region.districts.forEach(district => {
+                html += `<h4 style="margin-top: 20px; color: var(--accent);">${district.name} District</h4>`;
+                
+                district.wards.forEach(ward => {
+                    html += `
+                        <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h5 style="color: var(--primary);">${ward.name} - ${ward.village}</h5>
+                            
+                            <div class="extension-worker">
+                                <h6>Extension Worker:</h6>
+                                <p><strong>Name:</strong> ${ward.extensionWorker.name}</p>
+                                <p><strong>Office:</strong> ${ward.extensionWorker.office}</p>
+                                <p><strong>Contact:</strong> ${ward.extensionWorker.contact}</p>
+                                <p><strong>Gender:</strong> ${ward.extensionWorker.gender}</p>
+                            </div>
+                            
+                            <div class="garden-card">
+                                <h6>Community Garden:</h6>
+                                <p><strong>Village:</strong> ${ward.communityGarden.village}</p>
+                                <p><strong>Products:</strong> ${ward.communityGarden.products.join(', ')}</p>
+                                <p><strong>President Contact:</strong> ${ward.communityGarden.presidentContact}</p>
+                                <p><strong>Production Frequency:</strong> ${ward.communityGarden.productionFrequency}</p>
+                            </div>
+                            
+                            <h6 style="margin-top: 15px;">Commercial Farmers:</h6>
+                    `;
+                    
+                    ward.farmers.forEach(farmer => {
+                        html += `
+                            <div class="farmer-card">
+                                <p><strong>Name:</strong> ${farmer.name} (${farmer.gender})</p>
+                                <p><strong>Location:</strong> ${farmer.location}</p>
+                                <p><strong>Products:</strong> ${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}</p>
+                                <p><strong>Production Capacity:</strong> ${farmer.productionCapacity}</p>
+                                <p><strong>Profile:</strong> <a href="${farmer.profile}" target="_blank">View Profile</a></p>
+                                <p><strong>Contact:</strong> ${farmer.contact}</p>
+                                <p><strong>Employees:</strong> ${farmer.employees}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                });
+            });
+            
+            html += `
+                <div class="data-actions">
+                    <button class="btn" onclick="downloadRegionCSV(${regionId})">Download ${region.name} CSV</button>
+                    <button class="btn" onclick="downloadRegionProductionCSV(${regionId})">Download ${region.name} Production Data</button>
+                </div>
+            `;
+            
+            dataDisplay.innerHTML = html;
+            
+            // Scroll to data display section
+            document.getElementById('farmers-data').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to download all data as CSV
+        function downloadAllData() {
+            let csvContent = "Region,District,Ward,Village,Type,Name,Gender,Products,Production Capacity,Contact,Employees,Profile,Production Frequency,President Contact,Office\n";
+            
+            gambiaFarmersData.regions.forEach(region => {
+                region.districts.forEach(district => {
+                    district.wards.forEach(ward => {
+                        // Add extension worker
+                        csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Extension Worker","${ward.extensionWorker.name}","${ward.extensionWorker.gender}","","","${ward.extensionWorker.contact}","","","","","${ward.extensionWorker.office}"\n`;
+                        
+                        // Add community garden
+                        csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Community Garden","","","${ward.communityGarden.products.join(', ')}","","","","","${ward.communityGarden.productionFrequency}","${ward.communityGarden.presidentContact}",""\n`;
+                        
+                        // Add farmers
+                        ward.farmers.forEach(farmer => {
+                            csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Commercial Farmer","${farmer.name}","${farmer.gender}","${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}","${farmer.productionCapacity}","${farmer.contact}","${farmer.employees}","${farmer.profile}","","",""\n`;
+                        });
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, 'gambia_farmers_complete_database.csv');
+        }
+
+        // Function to download production data as CSV
+        function downloadProductionData() {
+            let csvContent = "Region,District,Product,Total Production Capacity,Number of Farmers\n";
+            
+            const productionData = {};
+            
+            gambiaFarmersData.regions.forEach(region => {
+                productionData[region.name] = {};
+                
+                region.districts.forEach(district => {
+                    productionData[region.name][district.name] = {};
+                    
+                    district.wards.forEach(ward => {
+                        ward.farmers.forEach(farmer => {
+                            const products = Array.isArray(farmer.products) ? farmer.products : [farmer.products];
+                            
+                            products.forEach(product => {
+                                if (!productionData[region.name][district.name][product]) {
+                                    productionData[region.name][district.name][product] = {
+                                        capacity: 0,
+                                        farmers: 0
+                                    };
+                                }
+                                
+                                // Extract numeric value from production capacity string
+                                const capacityMatch = farmer.productionCapacity.match(/(\d+)/);
+                                const capacity = capacityMatch ? parseInt(capacityMatch[1]) : 0;
+                                
+                                productionData[region.name][district.name][product].capacity += capacity;
+                                productionData[region.name][district.name][product].farmers += 1;
+                            });
+                        });
+                    });
+                });
+            });
+            
+            // Build CSV content
+            Object.keys(productionData).forEach(region => {
+                Object.keys(productionData[region]).forEach(district => {
+                    Object.keys(productionData[region][district]).forEach(product => {
+                        const data = productionData[region][district][product];
+                        csvContent += `"${region}","${district}","${product}","${data.capacity} tons","${data.farmers}"\n`;
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, 'gambia_farmers_production_capacity.csv');
+        }
+
+        // Function to download a specific region's CSV
+        function downloadRegionCSV(regionId) {
+            const region = gambiaFarmersData.regions.find(r => r.id === regionId);
+            let csvContent = "Region,District,Ward,Village,Type,Name,Gender,Products,Production Capacity,Contact,Employees,Profile,Production Frequency,President Contact,Office\n";
+            
+            region.districts.forEach(district => {
+                district.wards.forEach(ward => {
+                    // Add extension worker
+                    csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Extension Worker","${ward.extensionWorker.name}","${ward.extensionWorker.gender}","","","${ward.extensionWorker.contact}","","","","","${ward.extensionWorker.office}"\n`;
+                    
+                    // Add community garden
+                    csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Community Garden","","","${ward.communityGarden.products.join(', ')}","","","","","${ward.communityGarden.productionFrequency}","${ward.communityGarden.presidentContact}",""\n`;
+                    
+                    // Add farmers
+                    ward.farmers.forEach(farmer => {
+                        csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","Commercial Farmer","${farmer.name}","${farmer.gender}","${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}","${farmer.productionCapacity}","${farmer.contact}","${farmer.employees}","${farmer.profile}","","",""\n`;
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, `${region.name.replace(/\s+/g, '_')}_database.csv`);
+        }
+
+        // Function to download a specific region's production data
+        function downloadRegionProductionCSV(regionId) {
+            const region = gambiaFarmersData.regions.find(r => r.id === regionId);
+            let csvContent = "Region,District,Product,Total Production Capacity,Number of Farmers\n";
+            
+            const productionData = {};
+            
+            region.districts.forEach(district => {
+                productionData[district.name] = {};
+                
+                district.wards.forEach(ward => {
+                    ward.farmers.forEach(farmer => {
+                        const products = Array.isArray(farmer.products) ? farmer.products : [farmer.products];
+                        
+                        products.forEach(product => {
+                            if (!productionData[district.name][product]) {
+                                productionData[district.name][product] = {
+                                    capacity: 0,
+                                    farmers: 0
+                                };
+                            }
+                            
+                            // Extract numeric value from production capacity string
+                            const capacityMatch = farmer.productionCapacity.match(/(\d+)/);
+                            const capacity = capacityMatch ? parseInt(capacityMatch[1]) : 0;
+                            
+                            productionData[district.name][product].capacity += capacity;
+                            productionData[district.name][product].farmers += 1;
+                        });
+                    });
+                });
+            });
+            
+            // Build CSV content
+            Object.keys(productionData).forEach(district => {
+                Object.keys(productionData[district]).forEach(product => {
+                    const data = productionData[district][product];
+                    csvContent += `"${region.name}","${district}","${product}","${data.capacity} tons","${data.farmers}"\n`;
+                });
+            });
+            
+            downloadCSV(csvContent, `${region.name.replace(/\s+/g, '_')}_production_capacity.csv`);
+        }
+
+        // Helper function to download CSV
+        function downloadCSV(csvContent, fileName) {
+            const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize the page when loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            displayRegions();
         });
-
-        secRow.appendChild(section);
-        bEl.appendChild(secRow);
-        grid.appendChild(bEl);
-      });
-
-      dEl.appendChild(grid);
-      contentArea.appendChild(dEl);
-    });
-  });
-}
-
-// populate district dropdown when region changes
-regionFilter.addEventListener('change', () => {
-  const val = regionFilter.value;
-  districtFilter.innerHTML = '<option value="">All Districts</option>';
-  branchFilter.innerHTML = '<option value="">All Agric Extension Offices</option>';
-  if(!val){
-    filterAndRender(); return;
-  }
-  const regionObj = fullData.find(r => r.region === val);
-  if(regionObj){
-    regionObj.districts.forEach(d => {
-      const o = document.createElement('option');
-      o.value = d.district;
-      o.textContent = d.district;
-      districtFilter.appendChild(o);
-    });
-  }
-  filterAndRender();
-});
-
-// when district changes, populate branches
-districtFilter.addEventListener('change', () => {
-  const regionVal = regionFilter.value;
-  const districtVal = districtFilter.value;
-  branchFilter.innerHTML = '<option value="">All Agric Extension Offices</option>';
-  if(regionVal && districtVal){
-    const regionObj = fullData.find(r => r.region === regionVal);
-    if(regionObj){
-      const districtObj = regionObj.districts.find(d => d.district === districtVal);
-      if(districtObj){
-        districtObj.branches.forEach(b => {
-          const o = document.createElement('option');
-          o.value = b.branch;
-          o.textContent = b.branch;
-          branchFilter.appendChild(o);
-        });
-      }
-    }
-  }
-  filterAndRender();
-});
-
-branchFilter.addEventListener('change', filterAndRender);
-searchInput.addEventListener('input', () => {
-  clearTimeout(window._searchTimer);
-  window._searchTimer = setTimeout(filterAndRender, 180);
-});
-
-clearBtn.addEventListener('click', () => {
-  searchInput.value = '';
-  regionFilter.value = '';
-  districtFilter.innerHTML = '<option value="">All Districts</option>';
-  branchFilter.innerHTML = '<option value="">All Agric Extension Offices</option>';
-  [...regionListEl.children].forEach(c => c.classList.remove('active'));
-  tabRegions.click();
-  renderRegionsView();
-});
-
-// Tabs behavior
-tabRegions.addEventListener('click', () => {
-  tabRegions.classList.add('active');
-  tabStats.classList.remove('active');
-  renderRegionsView();
-});
-
-tabStats.addEventListener('click', () => {
-  tabRegions.classList.remove('active');
-  tabStats.classList.add('active');
-  renderStatisticsView();
-});
-
-// viewStatsTop scrolls to statistics (switch tab)
-viewStatsTop.addEventListener('click', () => {
-  tabStats.click();
-  contentArea.scrollIntoView({behavior:'smooth', block:'start'});
-});
-
-// initial load: show Regions view
-renderRegionsView();
-filterAndRender();
-
-
-
-// --- AUTOGENERATED REGIONS / DISTRICTS / VILLAGES (Teachers Directory) ---
-const regionsInput = [
-  {
-    name: "BASSE (Upper River Region)",
-    districts: [
-      { district: "Wuli East", villages: ["Bantunding","Wellingara Yare","Sare Ngai Sillah","Barrow Kunda East","Koli Kunda"] },
-      { district: "Wuli West", villages: ["Sare Ngai","Sare Gayo","Barrow Kunda","Yoro Jelal","Sare Pateh"] },
-      { district: "Jimara", villages: ["Kaiaf","Sare Alpha","Koina","Fula Bantang","Sare Soffie"] },
-      { district: "Kantora", villages: ["Garawol","Nema","Sare Jor","Kundam Jawo","Sare Musa"] },
-      { district: "Sandu", villages: ["Diabugu Batapa","Sare Sillay","Bajonkoto","Koba Kunda","Jula Kunda"] },
-      { district: "Tumana", villages: ["Sutukoba","Kundam Demba","Barajally Tenda","Bani","Bajakunda"] },
-      { district: "Fulladu East", villages: ["Basse Santa Su","Manneh Kunda","Demba Kunda","Sare Pateh","Kaba Kama"] }
-    ]
-  },
-  {
-    name: "JANJANBUREH (Central River South)",
-    districts: [
-      { district: "Niamina East", villages: ["Sapu","Kudang","Missira","Jarreng","Kunting"] },
-      { district: "Niamina West", villages: ["Dankunku","Kerr Sering","Bambako","Sare Jallow","Jimbala"] },
-      { district: "Niamina Dankunku", villages: ["Dankunku Village","Sare Bambo","Jimbala Kunda","Kerr Wally","Simbara"] },
-      { district: "Janjanbureh (Island)", villages: ["Janjanbureh Town","Lamin Koto","Georgetown Camp","Sankulay Kunda","Kosema"] },
-      { district: "Fulladu West", villages: ["Bansang","Kunting","Tuba Dampu","Bale","Sare Jawo"] }
-    ]
-  },
-  {
-    name: "KUNTAUR (Central River North)",
-    districts: [
-      { district: "Lower Saloum", villages: ["Kaur","Karantaba","Simbara","Bantanto","Balanghar"] },
-      { district: "Upper Saloum", villages: ["Njau","Kaur Wollof","Jahally","Sare Nduwa","Njoben"] },
-      { district: "Niani", villages: ["Wassu","Karantaba Niani","Kuntaur Fulla Kunda","Bakadaji","Choya"] },
-      { district: "Nianija", villages: ["Panchang","Sinchu Baya","Dankunku Fula Kunda","Simbara Fula Kunda","Nianija Kunda"] },
-      { district: "Sami", villages: ["Kerr Ardo","Chamen Jalal Kunda","Njaw","Ker Alpha","Balal Kunda"] }
-    ]
-  },
-  {
-    name: "MANSOKONKO (Lower River Region)",
-    districts: [
-      { district: "Jarra East", villages: ["Bureng","Dasilameh","Dongoroba","Fellenkoto","Karantaba Jarreng"] },
-      { district: "Jarra Central", villages: ["Soma","Pakaliba","Mansakonko","Jenoi","Jiffarong"] },
-      { district: "Jarra West", villages: ["Sare Saidy","Fonkoi Kunda","Karantaba Jarra","Sankwia Jarra","Sankandi"] },
-      { district: "Kiang East", villages: ["Kaiaf","Kwinella","Jattaba","Madina Angalleh","Tabanding"] },
-      { district: "Kiang Central", villages: ["Dumbuto","Jifarong","Manduar (Kiang)","Joli","Kataba"] },
-      { district: "Kiang West", villages: ["Tendaba","Tankular","Sankwia","Keneba","Jola Kunda"] }
-    ]
-  },
-  {
-    name: "KEREWAN (North Bank Region)",
-    districts: [
-      { district: "Lower Niumi", villages: ["Barra","Essau","Albreda","Kanuma","Jinack Kajata"] },
-      { district: "Upper Niumi", villages: ["Bakindik","Kerr Devili","Sika","Lamin Niumi","Buniadu"] },
-      { district: "Jokadu", villages: ["Medina Sambujang","Bakang Wollof","Bakang Fula Kunda","Kerr Pateh","Kinteh Kunda"] },
-      { district: "Lower Baddibu", villages: ["Kerewan","Salikene","Illiasa","Ngayen","Banni"] },
-      { district: "Central Baddibu", villages: ["Farafenni","Dumbo","Njaba Kunda","Saruja","Chamen"] },
-      { district: "Sabach Sanjal", villages: ["Njawara","Sanjal","Sara Kunda","Kuntaya","Kerr Jarga"] },
-      { district: "Illiassa / Upper Baddibu", villages: ["Illiasa","Salikenni","Njawara","Sami Kuta","Mandori"] }
-    ]
-  },
-  {
-    name: "BRIKAMA (West Coast Region)",
-    districts: [
-      { district: "Kombo South", villages: ["Sanyang","Gunjur","Tanji","Kartong","Jambanjelly"] },
-      { district: "Kombo Central", villages: ["Brikama Nema","Kassa Kunda","Marakissa","Kubuneh","Manduar (Kombo)"] },
-      { district: "Kombo East", villages: ["Faraba Banta","Kuloro","Mandinaba","Pirang","Kafuta"] },
-      { district: "Kombo North / St. Mary", villages: ["Sukuta","Wellingara","Bakoteh","Manjai Kunda","New Yundum"] },
-      { district: "Foni Bintang-Karenai", villages: ["Bintang","Sibanor","Kanfenda","Ndemban","Katakorr"] },
-      { district: "Foni Bondali", villages: ["Bondali Tenda","Besse","Bulock","Kanalji","Sangajorr"] },
-      { district: "Foni Brefet", villages: ["Brefet","Kafuta","Nyofelleh","Manduar Foni","Kampant"] },
-      { district: "Foni Jarrol", villages: ["Jarrol","Somita","Kandonk","Njongon","Bwiam"] },
-      { district: "Foni Kansala", villages: ["Bwiam","Kampant","Foni Bwaim","Kanfenda Kunda","Kanlaji"] }
-    ]
-  },
-  {
-    name: "BANJUL (Banjul City)",
-    districts: [
-      { district: "Banjul Central", villages: ["Half-Die","Campama","Crab Island","New Town","Booreng"] },
-      { district: "Banjul North", villages: ["Soldier Town","Tobacco Road","Buckle Street","Box Bar","Portuguese Town"] },
-      { district: "Banjul South", villages: ["Hagan Street","Perseverance Street","Lasso Wharf","Anglesea","Cotton Street"] }
-    ]
-  },
-  {
-    name: "KANIFING MUNICIPALITY",
-    districts: [
-      { district: "Kanifing District", villages: ["Serekunda","Bakau","Fajara","Latrikunda Sabiji","Bundung"] }
-    ]
-  }
-];
-// --- END AUTOGENERATED REGIONS ---
-
-</script>
+    </script>
 </body>
 </html>
 
