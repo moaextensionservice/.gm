@@ -183,6 +183,67 @@
             margin-bottom: 0.5rem;
         }
         
+        .region-stats {
+            background: linear-gradient(135deg, #f8f8f8, #ffffff);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #2d5a2d;
+        }
+        
+        .region-export-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .region-export-btn {
+            background: linear-gradient(135deg, #2d5a2d, #3a7a3a);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .region-export-btn:hover {
+            background: linear-gradient(135deg, #3a7a3a, #4a9a4a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .region-export-btn.gold {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #2d5a2d;
+        }
+        
+        .region-export-btn.gold:hover {
+            background: linear-gradient(135deg, #ffed4e, #fff08c);
+        }
+        
+        .region-export-btn.blue {
+            background: linear-gradient(135deg, #4682b4, #5a96d6);
+            color: white;
+        }
+        
+        .region-export-btn.blue:hover {
+            background: linear-gradient(135deg, #5a96d6, #6ca8e8);
+        }
+        
+        .region-export-btn.purple {
+            background: linear-gradient(135deg, #8a2be2, #9d4edd);
+            color: white;
+        }
+        
+        .region-export-btn.purple:hover {
+            background: linear-gradient(135deg, #9d4edd, #af60e8);
+        }
+        
         .district-section {
             margin: 1.5rem 0;
             padding: 1rem;
@@ -341,6 +402,10 @@
             }
             
             .export-buttons {
+                flex-direction: column;
+            }
+            
+            .region-export-buttons {
                 flex-direction: column;
             }
             
@@ -4435,6 +4500,11 @@
                     regionHTML += `<p>Capital: ${region.capital}</p>`;
                     regionHTML += `</div>`;
                     
+                    // Add region statistics and export buttons
+                    const regionStats = calculateRegionStatistics(region);
+                    regionHTML += createRegionStatsHTML(region, regionStats);
+                    regionHTML += createRegionExportButtonsHTML(region);
+                    
                     region.districts.forEach(district => {
                         if (selectedDistrict === 'all' || district.id === selectedDistrict) {
                             regionHTML += `<div class="district-section">`;
@@ -4474,6 +4544,11 @@
             html += `<p>Capital: ${region.capital}</p>`;
             html += `</div>`;
             
+            // Add region statistics and export buttons
+            const regionStats = calculateRegionStatistics(region);
+            html += createRegionStatsHTML(region, regionStats);
+            html += createRegionExportButtonsHTML(region);
+            
             region.districts.forEach(district => {
                 html += `<div class="district-section">`;
                 html += `<h3 class="district-header">${district.name} District</h3>`;
@@ -4490,6 +4565,91 @@
                 html += `</div>`;
             });
             
+            html += `</div>`;
+            return html;
+        }
+
+        function calculateRegionStatistics(region) {
+            let totalExtensionWorkers = 0;
+            let totalCommunityGardens = 0;
+            let totalCommercialFarmers = 0;
+            let totalEmployees = 0;
+            let totalProductionCapacity = 0;
+            let totalDistricts = region.districts.length;
+            let totalWards = 0;
+            
+            region.districts.forEach(district => {
+                district.wards.forEach(ward => {
+                    totalExtensionWorkers++;
+                    totalCommunityGardens++;
+                    totalCommercialFarmers += ward.farmers.length;
+                    totalWards++;
+                    
+                    ward.farmers.forEach(farmer => {
+                        totalEmployees += farmer.employees;
+                        
+                        // Extract numeric value from production capacity string
+                        const capacityMatch = farmer.productionCapacity.match(/(\d+)/);
+                        const capacity = capacityMatch ? parseInt(capacityMatch[1]) : 0;
+                        totalProductionCapacity += capacity;
+                    });
+                });
+            });
+            
+            return {
+                totalDistricts,
+                totalWards,
+                totalExtensionWorkers,
+                totalCommunityGardens,
+                totalCommercialFarmers,
+                totalEmployees,
+                totalProductionCapacity
+            };
+        }
+
+        function createRegionStatsHTML(region, stats) {
+            let html = `<div class="region-stats">`;
+            html += `<h3 style="color: #2d5a2d; margin-bottom: 1rem;">${region.name} Statistics</h3>`;
+            html += `<div class="stats-grid">`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalDistricts}</div>`;
+            html += `<div class="stat-label">Districts</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalWards}</div>`;
+            html += `<div class="stat-label">Wards</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalExtensionWorkers}</div>`;
+            html += `<div class="stat-label">Extension Workers</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalCommunityGardens}</div>`;
+            html += `<div class="stat-label">Community Gardens</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalCommercialFarmers}</div>`;
+            html += `<div class="stat-label">Commercial Farmers</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalEmployees}</div>`;
+            html += `<div class="stat-label">Total Employees</div>`;
+            html += `</div>`;
+            html += `<div class="stat-card">`;
+            html += `<div class="stat-value">${stats.totalProductionCapacity}</div>`;
+            html += `<div class="stat-label">Total Production (tons)</div>`;
+            html += `</div>`;
+            html += `</div>`;
+            html += `</div>`;
+            return html;
+        }
+
+        function createRegionExportButtonsHTML(region) {
+            let html = `<div class="region-export-buttons">`;
+            html += `<button class="region-export-btn" onclick="downloadRegionData('${region.id}', 'all')">Download ${region.name} Complete Data CSV</button>`;
+            html += `<button class="region-export-btn blue" onclick="downloadRegionData('${region.id}', 'extension-workers')">Download ${region.name} Extension Workers CSV</button>`;
+            html += `<button class="region-export-btn purple" onclick="downloadRegionData('${region.id}', 'community-gardens')">Download ${region.name} Community Gardens CSV</button>`;
+            html += `<button class="region-export-btn gold" onclick="downloadRegionData('${region.id}', 'commercial-farmers')">Download ${region.name} Commercial Farmers CSV</button>`;
             html += `</div>`;
             return html;
         }
@@ -4552,13 +4712,18 @@
             let totalCommercialFarmers = 0;
             let totalEmployees = 0;
             let totalProductionCapacity = 0;
+            let totalDistricts = 0;
+            let totalWards = 0;
             
             farmersData.regions.forEach(region => {
+                totalDistricts += region.districts.length;
+                
                 region.districts.forEach(district => {
                     district.wards.forEach(ward => {
                         totalExtensionWorkers++;
                         totalCommunityGardens++;
                         totalCommercialFarmers += ward.farmers.length;
+                        totalWards++;
                         
                         ward.farmers.forEach(farmer => {
                             totalEmployees += farmer.employees;
@@ -4577,6 +4742,14 @@
                 <div class="stat-card">
                     <div class="stat-value">${farmersData.regions.length}</div>
                     <div class="stat-label">Regions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalDistricts}</div>
+                    <div class="stat-label">Districts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalWards}</div>
+                    <div class="stat-label">Wards</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">${totalExtensionWorkers}</div>
@@ -4714,6 +4887,77 @@
             });
             
             downloadCSV(csvContent, 'gambia_farmers_commercial_farmers.csv');
+        }
+
+        function downloadRegionData(regionId, dataType) {
+            const region = farmersData.regions.find(r => r.id === regionId);
+            if (!region) return;
+            
+            let csvContent = "";
+            let fileName = "";
+            
+            switch(dataType) {
+                case 'all':
+                    csvContent = "District,Ward,Village,Type,Name,Gender,Products,Production Capacity,Contact,Employees,Profile,Extension Worker,Extension Office,Extension Contact,Community Garden Products,Garden President Contact,Production Frequency\n";
+                    
+                    region.districts.forEach(district => {
+                        district.wards.forEach(ward => {
+                            // Add extension worker
+                            csvContent += `"${district.name}","${ward.name}","${ward.village}","Extension Worker","${ward.extensionWorker.name}","${ward.extensionWorker.gender}","","","${ward.extensionWorker.contact}","","","${ward.extensionWorker.name}","${ward.extensionWorker.office}","${ward.extensionWorker.contact}",,,\n`;
+                            
+                            // Add community garden
+                            csvContent += `"${district.name}","${ward.name}","${ward.village}","Community Garden","","","${ward.communityGarden.products.join(', ')}","","","","",,,,"${ward.communityGarden.products.join(', ')}","${ward.communityGarden.presidentContact}","${ward.communityGarden.productionFrequency}"\n`;
+                            
+                            // Add farmers
+                            ward.farmers.forEach(farmer => {
+                                csvContent += `"${district.name}","${ward.name}","${ward.village}","Commercial Farmer","${farmer.name}","${farmer.gender}","${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}","${farmer.productionCapacity}","${farmer.contact}","${farmer.employees}","${farmer.profile}",,,,,,\n`;
+                            });
+                        });
+                    });
+                    
+                    fileName = `${region.name.replace(/\s+/g, '_').toLowerCase()}_complete_data.csv`;
+                    break;
+                    
+                case 'extension-workers':
+                    csvContent = "District,Ward,Village,Name,Office,Contact,Gender\n";
+                    
+                    region.districts.forEach(district => {
+                        district.wards.forEach(ward => {
+                            csvContent += `"${district.name}","${ward.name}","${ward.village}","${ward.extensionWorker.name}","${ward.extensionWorker.office}","${ward.extensionWorker.contact}","${ward.extensionWorker.gender}"\n`;
+                        });
+                    });
+                    
+                    fileName = `${region.name.replace(/\s+/g, '_').toLowerCase()}_extension_workers.csv`;
+                    break;
+                    
+                case 'community-gardens':
+                    csvContent = "District,Ward,Village,Products,President Contact,Production Frequency\n";
+                    
+                    region.districts.forEach(district => {
+                        district.wards.forEach(ward => {
+                            csvContent += `"${district.name}","${ward.name}","${ward.village}","${ward.communityGarden.products.join(', ')}","${ward.communityGarden.presidentContact}","${ward.communityGarden.productionFrequency}"\n`;
+                        });
+                    });
+                    
+                    fileName = `${region.name.replace(/\s+/g, '_').toLowerCase()}_community_gardens.csv`;
+                    break;
+                    
+                case 'commercial-farmers':
+                    csvContent = "District,Ward,Village,Name,Gender,Products,Production Capacity,Contact,Employees,Profile\n";
+                    
+                    region.districts.forEach(district => {
+                        district.wards.forEach(ward => {
+                            ward.farmers.forEach(farmer => {
+                                csvContent += `"${district.name}","${ward.name}","${ward.village}","${farmer.name}","${farmer.gender}","${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}","${farmer.productionCapacity}","${farmer.contact}","${farmer.employees}","${farmer.profile}"\n`;
+                            });
+                        });
+                    });
+                    
+                    fileName = `${region.name.replace(/\s+/g, '_').toLowerCase()}_commercial_farmers.csv`;
+                    break;
+            }
+            
+            downloadCSV(csvContent, fileName);
         }
 
         function downloadCSV(csvContent, fileName) {
