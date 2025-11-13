@@ -144,6 +144,24 @@
             background: linear-gradient(135deg, #ffed4e, #fff08c);
         }
         
+        .export-btn.blue {
+            background: linear-gradient(135deg, #4682b4, #5a96d6);
+            color: white;
+        }
+        
+        .export-btn.blue:hover {
+            background: linear-gradient(135deg, #5a96d6, #6ca8e8);
+        }
+        
+        .export-btn.purple {
+            background: linear-gradient(135deg, #8a2be2, #9d4edd);
+            color: white;
+        }
+        
+        .export-btn.purple:hover {
+            background: linear-gradient(135deg, #9d4edd, #af60e8);
+        }
+        
         .region-section {
             margin-bottom: 3rem;
             padding: 1.5rem;
@@ -282,6 +300,41 @@
             font-weight: 500;
         }
         
+        .stats-summary {
+            background: linear-gradient(135deg, #f8f8f8, #ffffff);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 2px solid #2d5a2d;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5a2d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #555;
+        }
+        
         @media (max-width: 768px) {
             .filter-row {
                 flex-direction: column;
@@ -298,6 +351,10 @@
             .header h1 {
                 font-size: 2rem;
             }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -310,6 +367,15 @@
 
         <div class="filters-container">
             <div class="filter-row">
+                <div class="filter-group">
+                    <label for="entity-type-select">Select Entity Type</label>
+                    <select id="entity-type-select" class="filter-select">
+                        <option value="all">All Entities</option>
+                        <option value="extension-worker">Extension Workers</option>
+                        <option value="community-garden">Community Gardens</option>
+                        <option value="commercial-farmer">Commercial Farmers</option>
+                    </select>
+                </div>
                 <div class="filter-group">
                     <label for="region-select">Select Region</label>
                     <select id="region-select" class="filter-select">
@@ -346,6 +412,22 @@
                 <button class="export-btn gold" id="download-production">
                     Download Production Capacity CSV
                 </button>
+                <button class="export-btn blue" id="download-extension-workers">
+                    Download Extension Workers CSV
+                </button>
+                <button class="export-btn purple" id="download-community-gardens">
+                    Download Community Gardens CSV
+                </button>
+                <button class="export-btn gold" id="download-commercial-farmers">
+                    Download Commercial Farmers CSV
+                </button>
+            </div>
+
+            <div class="stats-summary">
+                <h3 style="color: #2d5a2d; margin-bottom: 1rem;">Database Statistics</h3>
+                <div class="stats-grid" id="stats-container">
+                    <!-- Statistics will be populated here -->
+                </div>
             </div>
 
             <div id="results-container">
@@ -4242,8 +4324,10 @@
             populateDistrictDropdown();
             populateVillageDropdown();
             displayAllData();
+            updateStatistics();
             
             // Add event listeners
+            document.getElementById('entity-type-select').addEventListener('change', displayFilteredData);
             document.getElementById('region-select').addEventListener('change', function() {
                 populateDistrictDropdown();
                 populateVillageDropdown();
@@ -4259,6 +4343,9 @@
             
             document.getElementById('download-all').addEventListener('click', downloadAllData);
             document.getElementById('download-production').addEventListener('click', downloadProductionData);
+            document.getElementById('download-extension-workers').addEventListener('click', downloadExtensionWorkersData);
+            document.getElementById('download-community-gardens').addEventListener('click', downloadCommunityGardensData);
+            document.getElementById('download-commercial-farmers').addEventListener('click', downloadCommercialFarmersData);
         }
 
         function populateDistrictDropdown() {
@@ -4327,10 +4414,12 @@
         }
 
         function displayFilteredData() {
+            const entityTypeSelect = document.getElementById('entity-type-select');
             const regionSelect = document.getElementById('region-select');
             const districtSelect = document.getElementById('district-select');
             const villageSelect = document.getElementById('village-select');
             
+            const selectedEntityType = entityTypeSelect.value;
             const selectedRegion = regionSelect.value;
             const selectedDistrict = districtSelect.value;
             const selectedVillage = villageSelect.value;
@@ -4358,7 +4447,13 @@
                             
                             district.wards.forEach(ward => {
                                 if (selectedVillage === 'all' || ward.village === selectedVillage) {
-                                    regionHTML += createWardHTML(ward);
+                                    // Check if we need to display this ward based on entity type
+                                    if (selectedEntityType === 'all' || 
+                                        selectedEntityType === 'extension-worker' || 
+                                        selectedEntityType === 'community-garden' ||
+                                        (selectedEntityType === 'commercial-farmer' && ward.farmers.length > 0)) {
+                                        regionHTML += createWardHTML(ward, selectedEntityType);
+                                    }
                                 }
                             });
                             
@@ -4389,7 +4484,7 @@
                 html += `</div>`;
                 
                 district.wards.forEach(ward => {
-                    html += createWardHTML(ward);
+                    html += createWardHTML(ward, 'all');
                 });
                 
                 html += `</div>`;
@@ -4399,7 +4494,7 @@
             return html;
         }
 
-        function createWardHTML(ward) {
+        function createWardHTML(ward, entityType) {
             let html = `<div class="ward-section">`;
             html += `<div class="ward-header">`;
             html += `<h4>${ward.name}</h4>`;
@@ -4407,42 +4502,103 @@
             html += `</div>`;
             
             // Extension Worker
-            html += `<div class="extension-worker">`;
-            html += `<h4>Extension Worker</h4>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Name:</span><span class="detail-value">${ward.extensionWorker.name}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Office:</span><span class="detail-value">${ward.extensionWorker.office}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Contact:</span><span class="detail-value">${ward.extensionWorker.contact}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Gender:</span><span class="detail-value">${ward.extensionWorker.gender}</span></div>`;
-            html += `</div>`;
+            if (entityType === 'all' || entityType === 'extension-worker') {
+                html += `<div class="extension-worker">`;
+                html += `<h4>Extension Worker</h4>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Name:</span><span class="detail-value">${ward.extensionWorker.name}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Office:</span><span class="detail-value">${ward.extensionWorker.office}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Contact:</span><span class="detail-value">${ward.extensionWorker.contact}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Gender:</span><span class="detail-value">${ward.extensionWorker.gender}</span></div>`;
+                html += `</div>`;
+            }
             
             // Community Garden
-            html += `<div class="community-garden">`;
-            html += `<h4>Community Garden</h4>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Village:</span><span class="detail-value">${ward.communityGarden.village}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Products:</span><span class="detail-value">${ward.communityGarden.products.join(', ')}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">President Contact:</span><span class="detail-value">${ward.communityGarden.presidentContact}</span></div>`;
-            html += `<div class="farmer-detail"><span class="detail-label">Production Frequency:</span><span class="detail-value">${ward.communityGarden.productionFrequency}</span></div>`;
-            html += `</div>`;
+            if (entityType === 'all' || entityType === 'community-garden') {
+                html += `<div class="community-garden">`;
+                html += `<h4>Community Garden</h4>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Village:</span><span class="detail-value">${ward.communityGarden.village}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Products:</span><span class="detail-value">${ward.communityGarden.products.join(', ')}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">President Contact:</span><span class="detail-value">${ward.communityGarden.presidentContact}</span></div>`;
+                html += `<div class="farmer-detail"><span class="detail-label">Production Frequency:</span><span class="detail-value">${ward.communityGarden.productionFrequency}</span></div>`;
+                html += `</div>`;
+            }
             
             // Farmers
-            html += `<h4 style="color: #2d5a2d; margin: 1.5rem 0 1rem 0;">Commercial Individual Farmers</h4>`;
-            html += `<div class="farmers-grid">`;
-            
-            ward.farmers.forEach(farmer => {
-                html += `<div class="farmer-card">`;
-                html += `<h4>${farmer.name} (${farmer.gender})</h4>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Location:</span><span class="detail-value">${farmer.location}</span></div>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Products:</span><span class="detail-value">${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}</span></div>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Production Capacity:</span><span class="detail-value">${farmer.productionCapacity}</span></div>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Contact:</span><span class="detail-value">${farmer.contact}</span></div>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Employees:</span><span class="detail-value">${farmer.employees}</span></div>`;
-                html += `<div class="farmer-detail"><span class="detail-label">Profile:</span><span class="detail-value"><a href="${farmer.profile}" target="_blank">View Profile</a></span></div>`;
+            if ((entityType === 'all' || entityType === 'commercial-farmer') && ward.farmers.length > 0) {
+                html += `<h4 style="color: #2d5a2d; margin: 1.5rem 0 1rem 0;">Commercial Individual Farmers</h4>`;
+                html += `<div class="farmers-grid">`;
+                
+                ward.farmers.forEach(farmer => {
+                    html += `<div class="farmer-card">`;
+                    html += `<h4>${farmer.name} (${farmer.gender})</h4>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Location:</span><span class="detail-value">${farmer.location}</span></div>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Products:</span><span class="detail-value">${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}</span></div>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Production Capacity:</span><span class="detail-value">${farmer.productionCapacity}</span></div>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Contact:</span><span class="detail-value">${farmer.contact}</span></div>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Employees:</span><span class="detail-value">${farmer.employees}</span></div>`;
+                    html += `<div class="farmer-detail"><span class="detail-label">Profile:</span><span class="detail-value"><a href="${farmer.profile}" target="_blank">View Profile</a></span></div>`;
+                    html += `</div>`;
+                });
+                
                 html += `</div>`;
-            });
-            
-            html += `</div>`;
+            }
             html += `</div>`;
             return html;
+        }
+
+        function updateStatistics() {
+            let totalExtensionWorkers = 0;
+            let totalCommunityGardens = 0;
+            let totalCommercialFarmers = 0;
+            let totalEmployees = 0;
+            let totalProductionCapacity = 0;
+            
+            farmersData.regions.forEach(region => {
+                region.districts.forEach(district => {
+                    district.wards.forEach(ward => {
+                        totalExtensionWorkers++;
+                        totalCommunityGardens++;
+                        totalCommercialFarmers += ward.farmers.length;
+                        
+                        ward.farmers.forEach(farmer => {
+                            totalEmployees += farmer.employees;
+                            
+                            // Extract numeric value from production capacity string
+                            const capacityMatch = farmer.productionCapacity.match(/(\d+)/);
+                            const capacity = capacityMatch ? parseInt(capacityMatch[1]) : 0;
+                            totalProductionCapacity += capacity;
+                        });
+                    });
+                });
+            });
+            
+            const statsContainer = document.getElementById('stats-container');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${farmersData.regions.length}</div>
+                    <div class="stat-label">Regions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalExtensionWorkers}</div>
+                    <div class="stat-label">Extension Workers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalCommunityGardens}</div>
+                    <div class="stat-label">Community Gardens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalCommercialFarmers}</div>
+                    <div class="stat-label">Commercial Farmers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalEmployees}</div>
+                    <div class="stat-label">Total Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalProductionCapacity}</div>
+                    <div class="stat-label">Total Production (tons)</div>
+                </div>
+            `;
         }
 
         function downloadAllData() {
@@ -4514,6 +4670,50 @@
             });
             
             downloadCSV(csvContent, 'gambia_farmers_production_capacity.csv');
+        }
+
+        function downloadExtensionWorkersData() {
+            let csvContent = "Region,District,Ward,Village,Name,Office,Contact,Gender\n";
+            
+            farmersData.regions.forEach(region => {
+                region.districts.forEach(district => {
+                    district.wards.forEach(ward => {
+                        csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","${ward.extensionWorker.name}","${ward.extensionWorker.office}","${ward.extensionWorker.contact}","${ward.extensionWorker.gender}"\n`;
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, 'gambia_farmers_extension_workers.csv');
+        }
+
+        function downloadCommunityGardensData() {
+            let csvContent = "Region,District,Ward,Village,Products,President Contact,Production Frequency\n";
+            
+            farmersData.regions.forEach(region => {
+                region.districts.forEach(district => {
+                    district.wards.forEach(ward => {
+                        csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","${ward.communityGarden.products.join(', ')}","${ward.communityGarden.presidentContact}","${ward.communityGarden.productionFrequency}"\n`;
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, 'gambia_farmers_community_gardens.csv');
+        }
+
+        function downloadCommercialFarmersData() {
+            let csvContent = "Region,District,Ward,Village,Name,Gender,Products,Production Capacity,Contact,Employees,Profile\n";
+            
+            farmersData.regions.forEach(region => {
+                region.districts.forEach(district => {
+                    district.wards.forEach(ward => {
+                        ward.farmers.forEach(farmer => {
+                            csvContent += `"${region.name}","${district.name}","${ward.name}","${ward.village}","${farmer.name}","${farmer.gender}","${Array.isArray(farmer.products) ? farmer.products.join(', ') : farmer.products}","${farmer.productionCapacity}","${farmer.contact}","${farmer.employees}","${farmer.profile}"\n`;
+                        });
+                    });
+                });
+            });
+            
+            downloadCSV(csvContent, 'gambia_farmers_commercial_farmers.csv');
         }
 
         function downloadCSV(csvContent, fileName) {
