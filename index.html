@@ -13,8 +13,8 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
-            color: #f0f0f0;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            color: #333;
             min-height: 100vh;
         }
         
@@ -25,32 +25,13 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #ffd700, #ffed4e, #fff9c4);
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #fff8dc);
             padding: 2rem;
             border-radius: 15px;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             text-align: center;
             border: 3px solid #b8860b;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
-            z-index: 1;
-            animation: diamond-shine 3s infinite;
-        }
-        
-        @keyframes diamond-shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
         
         .header h1 {
@@ -58,16 +39,12 @@
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 2;
         }
         
         .header p {
             color: #555;
             font-size: 1.2rem;
             font-weight: 500;
-            position: relative;
-            z-index: 2;
         }
         
         .filters-container {
@@ -75,7 +52,7 @@
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            box-shadow: 0 6px 20px rgba(192, 192, 192, 0.4);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
             border: 2px solid #a0a0a0;
         }
         
@@ -102,9 +79,9 @@
         .filter-select {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #ffd700;
+            border: 2px solid #b8860b;
             border-radius: 8px;
-            background: linear-gradient(135deg, #fff, #f8f8f8);
+            background: linear-gradient(135deg, #fffaf0, #fff);
             font-size: 1rem;
             font-weight: 500;
             color: #2d2d2d;
@@ -114,7 +91,7 @@
         }
         
         .filter-select:hover {
-            border-color: #b8860b;
+            border-color: #ffd700;
             box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
         }
         
@@ -150,62 +127,37 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border: 1px solid #a0a0a0;
         }
         
         .export-btn:hover {
             background: linear-gradient(135deg, #e8e8e8, #f8f8f8);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(192, 192, 192, 0.5);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         
         .export-btn.gold {
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #2d2d2d;
-            border: 1px solid #b8860b;
         }
         
         .export-btn.gold:hover {
             background: linear-gradient(135deg, #ffed4e, #fff08c);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-        }
-        
-        .export-btn.diamond {
-            background: linear-gradient(135deg, #e8f4f8, #ffffff);
-            color: #2d2d2d;
-            border: 1px solid #b0e0e6;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .export-btn.diamond::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%);
-            z-index: 1;
-            animation: diamond-shine 3s infinite;
         }
         
         .region-section {
             margin-bottom: 3rem;
             padding: 1.5rem;
-            background: linear-gradient(135deg, #f8f8f8, #ffffff);
+            background: linear-gradient(135deg, #f8fff8, #ffffff);
             border-radius: 12px;
             border: 2px solid #c0c0c0;
-            color: #2d2d2d;
         }
         
         .region-header {
-            background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #2d2d2d;
             padding: 1rem 1.5rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
-            border: 1px solid #a0a0a0;
         }
         
         .region-header h2 {
@@ -216,7 +168,7 @@
         .district-section {
             margin: 1.5rem 0;
             padding: 1rem;
-            background: #f0f0f0;
+            background: #f0f8f0;
             border-radius: 8px;
             border-left: 5px solid #ffd700;
         }
@@ -226,7 +178,7 @@
             font-size: 1.4rem;
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #b8860b;
+            border-bottom: 2px solid #c0c0c0;
         }
         
         .ward-section {
@@ -248,11 +200,11 @@
         }
         
         .extension-worker {
-            background: linear-gradient(135deg, #f0f0f0, #f8f8f8);
+            background: linear-gradient(135deg, #fffaf0, #fff8dc);
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
-            border: 2px solid #c0c0c0;
+            border: 2px solid #ffd700;
         }
         
         .extension-worker h4 {
@@ -262,11 +214,11 @@
         }
         
         .community-garden {
-            background: linear-gradient(135deg, #f0f8ff, #f8fbff);
+            background: linear-gradient(135deg, #f8f8f8, #ffffff);
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
-            border: 2px solid #b0e0e6;
+            border: 2px solid #c0c0c0;
         }
         
         .community-garden h4 {
@@ -388,14 +340,11 @@
 
         <div class="data-display">
             <div class="export-buttons">
-                <button class="export-btn silver" onclick="downloadAllData()">
+                <button class="export-btn" onclick="downloadAllData()">
                     Download Complete Database CSV
                 </button>
                 <button class="export-btn gold" onclick="downloadProductionData()">
                     Download Production Capacity CSV
-                </button>
-                <button class="export-btn diamond" onclick="downloadRegionalSummary()">
-                    Download Regional Summary CSV
                 </button>
             </div>
 
@@ -4347,6 +4296,22 @@
                         });
                     }
                 }
+            } else if (selectedRegion === 'all' && selectedDistrict !== 'all') {
+                // Find the district in any region
+                let foundDistrict = null;
+                for (const region of farmersData.regions) {
+                    foundDistrict = region.districts.find(d => d.id === selectedDistrict);
+                    if (foundDistrict) break;
+                }
+                
+                if (foundDistrict) {
+                    foundDistrict.villages.forEach(village => {
+                        const option = document.createElement('option');
+                        option.value = village;
+                        option.textContent = village;
+                        villageSelect.appendChild(option);
+                    });
+                }
             }
         }
 
@@ -4386,8 +4351,11 @@
                     regionHTML += `<p>Capital: ${region.capital}</p>`;
                     regionHTML += `</div>`;
                     
+                    let hasVisibleDistricts = false;
+                    
                     region.districts.forEach(district => {
                         if (selectedDistrict === 'all' || district.id === selectedDistrict) {
+                            hasVisibleDistricts = true;
                             regionHTML += `<div class="district-section">`;
                             regionHTML += `<h3 class="district-header">${district.name} District</h3>`;
                             regionHTML += `<div class="village-list">`;
@@ -4396,20 +4364,35 @@
                             });
                             regionHTML += `</div>`;
                             
+                            let hasVisibleWards = false;
+                            
                             district.wards.forEach(ward => {
                                 if (selectedVillage === 'all' || ward.village === selectedVillage) {
+                                    hasVisibleWards = true;
                                     regionHTML += createWardHTML(ward);
                                 }
                             });
+                            
+                            if (!hasVisibleWards) {
+                                regionHTML += `<p>No wards found for the selected filters.</p>`;
+                            }
                             
                             regionHTML += `</div>`;
                         }
                     });
                     
+                    if (!hasVisibleDistricts) {
+                        regionHTML += `<p>No districts found for the selected filters.</p>`;
+                    }
+                    
                     regionHTML += `</div>`;
                     resultsContainer.innerHTML += regionHTML;
                 }
             });
+            
+            if (resultsContainer.innerHTML === '') {
+                resultsContainer.innerHTML = '<p>No data found for the selected filters.</p>';
+            }
         }
 
         function createRegionHTML(region) {
@@ -4554,34 +4537,6 @@
             });
             
             downloadCSV(csvContent, 'gambia_farmers_production_capacity.csv');
-        }
-
-        function downloadRegionalSummary() {
-            let csvContent = "Region,Total Districts,Total Villages,Total Wards,Total Farmers,Total Extension Workers,Total Community Gardens\n";
-            
-            farmersData.regions.forEach(region => {
-                let totalDistricts = region.districts.length;
-                let totalVillages = 0;
-                let totalWards = 0;
-                let totalFarmers = 0;
-                let totalExtensionWorkers = 0;
-                let totalCommunityGardens = 0;
-                
-                region.districts.forEach(district => {
-                    totalVillages += district.villages.length;
-                    totalWards += district.wards.length;
-                    
-                    district.wards.forEach(ward => {
-                        totalFarmers += ward.farmers.length;
-                        totalExtensionWorkers += 1; // Each ward has one extension worker
-                        totalCommunityGardens += 1; // Each ward has one community garden
-                    });
-                });
-                
-                csvContent += `"${region.name}","${totalDistricts}","${totalVillages}","${totalWards}","${totalFarmers}","${totalExtensionWorkers}","${totalCommunityGardens}"\n`;
-            });
-            
-            downloadCSV(csvContent, 'gambia_farmers_regional_summary.csv');
         }
 
         function downloadCSV(csvContent, fileName) {
